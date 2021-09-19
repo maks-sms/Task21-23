@@ -1,8 +1,6 @@
 package com.manegerbdcity;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CitiesService {
 
@@ -16,33 +14,43 @@ public class CitiesService {
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cities (id, name) VALUES (?, ?)");
         preparedStatement.setString(1, city.getId());
         preparedStatement.setString(2, city.getName());
-
         preparedStatement.executeUpdate();
 
         statement.close();
         connection.close();
     }
 
-    public static List<City> getCities() throws SQLException {
-
-        List<City> cityList = new ArrayList<>();
-
+    public static void addCity(City city, int population) throws SQLException {
         Connection connection = DriverManager.getConnection(urlBD);
         Statement statement = connection.createStatement();
 
-        String query = "SELECT * FROM cities";
-        ResultSet resultSet = statement.executeQuery(query);
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cities (id, name) VALUES (?, ?)");
+        preparedStatement.setString(1, city.getId());
+        preparedStatement.setString(2, city.getName());
+        preparedStatement.executeUpdate();
 
-        while (resultSet.next()) {
-            String id = resultSet.getString("id");
-            String name = resultSet.getString("name");
-            cityList.add(new City(id, name));
-        }
+        PreparedStatement preparedStatement2 = connection.prepareStatement("INSERT INTO city_details (city_id, population) VALUES (?, ?)");
+        preparedStatement2.setString(1, city.getId());
+        preparedStatement2.setInt(2, population);
+        preparedStatement2.executeUpdate();
 
-        resultSet.close();
         statement.close();
         connection.close();
+    }
 
-        return cityList;
+    public static void getCities() throws SQLException {
+        Connection connection = DriverManager.getConnection(urlBD);
+        Statement statement = connection.createStatement();
+
+        String SQL = "SELECT cities.name, city_details.population FROM cities JOIN city_details";
+        ResultSet resultSet = statement.executeQuery(SQL);
+
+        while (resultSet.next()) {
+            String name = resultSet.getString("name");
+            int population = resultSet.getInt("population");
+            System.out.println(name + " " + population);
+        }
+        statement.close();
+        connection.close();
     }
 }

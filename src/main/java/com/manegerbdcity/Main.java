@@ -1,7 +1,6 @@
 package com.manegerbdcity;
 
 import java.sql.*;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -15,28 +14,30 @@ public class Main {
         addBD();
         inputCity();
         printCity();
+
     }
 
     public static void inputCity() throws SQLException {
 
         Scanner scan = new Scanner(System.in);
         while (true) {
-            System.out.println("ВВедите нащвание города что бы добавить уго в базу (или пустую строку для выхода): ");
-            String str = scan.nextLine().trim();
+            System.out.println("ВВедите название города что бы добавить его в базу (или пустую строку для выхода): ");
+            String str = scan.nextLine();
             if (str.isEmpty()) {
                 System.out.println();
                 break;
             }
-            CitiesService.addCity(new City(str));
+            System.out.println("ВВедите название города что бы добавить его в базу (или пустую строку для выхода): ");
+            int str1 = scan.nextInt();
+            scan.skip("\\R");
+
+            CitiesService.addCity(new City(str),str1);
         }
 
     }
 
     public static void printCity() throws SQLException {
-        List<City> cityList = CitiesService.getCities();
-        for (City city : cityList) {
-            System.out.println(city.toString());
-        }
+        CitiesService.getCities();
     }
 
     public static void addBD() throws SQLException {
@@ -45,6 +46,8 @@ public class Main {
 
         String SQL = "CREATE TABLE IF NOT EXISTS cities (id text, name text)";
         statement.executeUpdate(SQL);
+        String SQL1 = "CREATE TABLE IF NOT EXISTS city_details (city_id text, population INTEGER)";
+        statement.executeUpdate(SQL1);
 
         statement.close();
         connection.close();
